@@ -129,7 +129,7 @@ footer{text-align:center;padding:0 15px 22px;color:#ffffffa8;font-size:12px}
 <footer>Rohans Web Parking</footer>
 
 <script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFMJb2Ip3v40u6SmO1yw3OszDPTjxbW2gknCqhpLWJd8bv1zHxJSoZrBlTBeM4VyyxcA/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFMJb2Ip3v40u6SmO1yw3OszDPTjxbW2gknCqhpLWJd8bv1zHxJSoZrBlTBeM4VyyxcA/exec".trim();
 
 const form = document.getElementById("parkingForm");
 const input = document.getElementById("plateInput");
@@ -155,10 +155,7 @@ form.addEventListener("submit", event => {
     return;
   }
 
-  if (
-    !APPS_SCRIPT_URL.startsWith("https://script.google.com/") ||
-    !APPS_SCRIPT_URL.endsWith("/exec")
-  ) {
+  if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(APPS_SCRIPT_URL)) {
     showMessage("Setup required: add your deployed Apps Script /exec URL in the HTML.", "error");
     return;
   }
