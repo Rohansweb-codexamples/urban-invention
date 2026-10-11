@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Rohans Hotel Admin</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#151515;color:#fff;font-family:Arial,sans-serif;padding:24px}.wrap{max-width:760px;margin:auto}h1{font-size:clamp(32px,7vw,52px);margin:10px 0;color:#ffd12e}.muted{color:#bbb;line-height:1.6}.card{background:#fff;color:#171717;padding:24px;border-radius:18px;border-top:5px solid #ff9700;margin-top:24px}label{display:block;font-weight:700;margin:18px 0 8px}input,textarea{width:100%;padding:13px;border:1px solid #aaa;border-radius:8px;font:inherit}textarea{min-height:95px}button{border:0;border-radius:9px;padding:15px 20px;font-weight:800;background:linear-gradient(100deg,#ff9700,#ffd12e);cursor:pointer;margin-top:20px;width:100%;font-size:16px}.status{margin-top:15px;padding:12px;border-radius:8px;background:#e1f7e7;color:#17632d;display:none}.warn{font-size:13px;color:#8b5c00;background:#fff3cd;padding:12px;border-radius:8px;line-height:1.5;margin-top:15px}a{color:#ffd12e}
+</style></head><body><div class="wrap"><p class="muted">ROHANS WEB · HOTEL MANAGEMENT</p><h1>Screen admin</h1><p class="muted">Edit the welcome screen shown by the parking page. Use the same browser/device for these local settings to appear on the display.</p>
+<div class="card"><form id="settingsForm"><label for="hotelName">Hotel name in header</label><input id="hotelName" maxlength="50" value="Parking">
+<label for="welcomeTitle">Welcome screen heading (HTML line breaks allowed)</label><input id="welcomeTitle" maxlength="120" value="Welcome to&lt;br&gt;&lt;span&gt;Rohans Hotel&lt;/span&gt;">
+<label for="welcomeText">Welcome message</label><textarea id="welcomeText">Welcome. Press any key on your connected keyboard to continue to hotel parking.</textarea>
+<button type="submit">Save screen settings</button><div id="saved" class="status" role="status">Settings saved on this device.</div></form>
+<div class="warn">Important: this is a static admin page. Browser-only settings do not sync between separate devices. Cross-device control needs a shared server/database endpoint.</div></div>
+<p><a href="../index.html">Open parking screen</a></p></div>
+<script>
+const form=document.getElementById("settingsForm");
+try{const s=JSON.parse(localStorage.getItem("rohansHotelScreenSettings")||"{}");if(s.hotelName)hotelName.value=s.hotelName;if(s.welcomeTitle)welcomeTitle.value=s.welcomeTitle;if(s.welcomeText)welcomeText.value=s.welcomeText}catch(e){}
+form.addEventListener("submit",e=>{e.preventDefault();const settings={hotelName:document.getElementById("hotelName").value.trim(),welcomeTitle:document.getElementById("welcomeTitle").value.trim(),welcomeText:document.getElementById("welcomeText").value.trim()};localStorage.setItem("rohansHotelScreenSettings",JSON.stringify(settings));const saved=document.getElementById("saved");saved.style.display="block";});
+</script></body></html>
