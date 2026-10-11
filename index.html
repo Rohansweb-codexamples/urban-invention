@@ -111,8 +111,8 @@ footer{text-align:center;padding:0 15px 22px;color:#ffffffa8;font-size:12px}
   <section id="welcomeScreen" class="content welcome-screen">
     <div class="eyebrow">A warm welcome</div>
     <h1>Welcome to<br><span>Rohans Hotel</span></h1>
-    <p class="description">Welcome. Use the button below to continue to the hotel parking registration.</p>
-    <button id="enterParking" type="button">Continue to parking</button>
+    <p class="description">Welcome. Press any key on your connected keyboard to continue to hotel parking.</p>
+    <button id="enterParking" type="button">Continue to parking (Enter)</button>
     <p class="note" style="color:#eee;text-align:center;margin-top:18px">Rohans Hotel · Guest parking</p>
   </section>
 
@@ -123,6 +123,10 @@ footer{text-align:center;padding:0 15px 22px;color:#ffffffa8;font-size:12px}
     <p class="description">Enter your vehicle registration number to register it in the Rohans Web Parking spreadsheet.</p>
     <div class="card">
       <form id="parkingForm">
+        <label for="guestName">Guest name</label>
+        <input id="guestName" name="guestName" placeholder="Full name" maxlength="80" autocomplete="name" required style="background:#fff;border:1px solid #bbb;border-radius:8px;font-size:18px;letter-spacing:0;text-align:left;padding:13px;margin-bottom:18px">
+        <label for="roomInput">Hotel room number</label>
+        <input id="roomInput" name="room" placeholder="Room number" maxlength="12" autocomplete="off" required style="background:#fff;border:1px solid #bbb;border-radius:8px;font-size:18px;letter-spacing:0;text-align:left;padding:13px;margin-bottom:18px">
         <label for="plateInput">Vehicle registration number</label>
         <div class="plate">
           <div class="plate-mark">UK</div>
@@ -141,12 +145,20 @@ footer{text-align:center;padding:0 15px 22px;color:#ffffffa8;font-size:12px}
 <script>
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFMJb2Ip3v40u6SmO1yw3OszDPTjxbW2gknCqhpLWJd8bv1zHxJSoZrBlTBeM4VyyxcA/exec".trim();
 
+const screenSettings = (() => { try { return JSON.parse(localStorage.getItem("rohansHotelScreenSettings") || "{}"); } catch (_) { return {}; } })();
+if (screenSettings.hotelName) document.querySelector(".brand").innerHTML = "ROHANS <span>WEB</span> " + screenSettings.hotelName.toUpperCase();
+if (screenSettings.welcomeTitle) document.querySelector("#welcomeScreen h1").innerHTML = screenSettings.welcomeTitle;
+if (screenSettings.welcomeText) document.querySelector("#welcomeScreen .description").textContent = screenSettings.welcomeText;
 const welcomeScreen = document.getElementById("welcomeScreen");
 const parkingScreen = document.getElementById("parkingScreen");
-document.getElementById("enterParking").addEventListener("click", () => {
+function enterParking() {
   welcomeScreen.hidden = true;
   parkingScreen.hidden = false;
-  document.getElementById("plateInput").focus();
+  document.getElementById("guestName").focus();
+}
+document.getElementById("enterParking").addEventListener("click", enterParking);
+document.addEventListener("keydown", event => {
+  if (!welcomeScreen.hidden && !["Control","Alt","Shift","Meta","Tab"].includes(event.key)) { event.preventDefault(); enterParking(); }
 });
 document.getElementById("backToWelcome").addEventListener("click", () => {
   parkingScreen.hidden = true;
@@ -171,6 +183,13 @@ form.addEventListener("submit", event => {
   event.preventDefault();
 
   const plate = input.value.trim().toUpperCase().replace(/\s+/g, " ");
+  const guestName = document.getElementById("guestName").value.trim();
+  const room = document.getElementById("roomInput").value.trim();
+
+  if (!guestName || !room) {
+    showMessage("Enter the guest name and hotel room number.", "error");
+    return;
+  }
 
   if (!plate) {
     showMessage("Please enter a vehicle registration number.", "error");
@@ -209,7 +228,7 @@ form.addEventListener("submit", event => {
     button.textContent = "Register vehicle";
 
     if (result && result.success) {
-      showMessage(result.message || "Vehicle saved to Google Sheets.", "success");
+      showMessage((result.message || "Vehicle registration saved.") + " Welcome, " + guestName + ". Your hotel room is " + room + ".", "success");
       input.value = "";
     } else {
       showMessage(
@@ -230,6 +249,8 @@ form.addEventListener("submit", event => {
   const params = new URLSearchParams({
     action: "register",
     plate: plate,
+    guestName: guestName,
+    room: room,
     callback: callbackName,
     t: String(Date.now())
   });
