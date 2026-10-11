@@ -1,0 +1,16 @@
+{
+  "name": "rohans-hotel-display",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Rohans Hotel welcome and parking display server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
