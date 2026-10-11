@@ -88,6 +88,15 @@ footer{text-align:center;padding:0 15px 22px;color:#ffffffa8;font-size:12px}
   header{padding:18px}.brand{font-size:17px}.status{font-size:9px}
   main{padding:35px 15px}.card{padding:22px}h1{letter-spacing:-1px}
 }
+
+[hidden]{display:none!important}
+.welcome-screen{text-align:center;max-width:760px}
+.welcome-screen h1{font-size:clamp(48px,9vw,88px);line-height:1.05}
+.welcome-screen .description{max-width:590px;margin:22px auto 32px}
+.welcome-screen button{max-width:390px;min-height:64px;font-size:19px}
+.back-button{width:auto;padding:11px 16px;background:#ffffffed;color:#191919;border:1px solid #ffffff80}
+@media(max-width:520px){.welcome-screen h1{font-size:clamp(42px,12vw,64px)}}
+
 </style>
 </head>
 <body>
@@ -99,25 +108,26 @@ footer{text-align:center;padding:0 15px 22px;color:#ffffffa8;font-size:12px}
 </header>
 
 <main>
-  <section class="content">
-    <div class="eyebrow">Vehicle registration</div>
-    <h1>Your parking.<br><span>Made simple.</span></h1>
-    <p class="description">
-      Enter your vehicle registration number below to register it
-      in the Rohans Web Parking spreadsheet.
-    </p>
+  <section id="welcomeScreen" class="content welcome-screen">
+    <div class="eyebrow">A warm welcome</div>
+    <h1>Welcome to<br><span>Rohans Hotel</span></h1>
+    <p class="description">Welcome. Use the button below to continue to the hotel parking registration.</p>
+    <button id="enterParking" type="button">Continue to parking</button>
+    <p class="note" style="color:#eee;text-align:center;margin-top:18px">Rohans Hotel · Guest parking</p>
+  </section>
 
+  <section id="parkingScreen" class="content" hidden>
+    <button id="backToWelcome" type="button" class="back-button">Back to welcome</button>
+    <div class="eyebrow" style="margin-top:26px">Guest vehicle registration</div>
+    <h1>Hotel <span>parking.</span></h1>
+    <p class="description">Enter your vehicle registration number to register it in the Rohans Web Parking spreadsheet.</p>
     <div class="card">
       <form id="parkingForm">
         <label for="plateInput">Vehicle registration number</label>
         <div class="plate">
           <div class="plate-mark">UK</div>
-          <input id="plateInput" name="plate"
-            placeholder="AB12 CDE" maxlength="10"
-            autocomplete="off" autocapitalize="characters"
-            aria-label="Vehicle registration number" required>
+          <input id="plateInput" name="plate" placeholder="AB12 CDE" maxlength="10" autocomplete="off" autocapitalize="characters" aria-label="Vehicle registration number" required>
         </div>
-
         <button id="registerButton" type="submit">Register vehicle</button>
         <div id="message" class="message" role="status" aria-live="polite"></div>
       </form>
@@ -130,6 +140,18 @@ footer{text-align:center;padding:0 15px 22px;color:#ffffffa8;font-size:12px}
 
 <script>
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFMJb2Ip3v40u6SmO1yw3OszDPTjxbW2gknCqhpLWJd8bv1zHxJSoZrBlTBeM4VyyxcA/exec".trim();
+
+const welcomeScreen = document.getElementById("welcomeScreen");
+const parkingScreen = document.getElementById("parkingScreen");
+document.getElementById("enterParking").addEventListener("click", () => {
+  welcomeScreen.hidden = true;
+  parkingScreen.hidden = false;
+  document.getElementById("plateInput").focus();
+});
+document.getElementById("backToWelcome").addEventListener("click", () => {
+  parkingScreen.hidden = true;
+  welcomeScreen.hidden = false;
+});
 
 const form = document.getElementById("parkingForm");
 const input = document.getElementById("plateInput");
