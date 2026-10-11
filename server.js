@@ -1,0 +1,10 @@
+const express=require('express');const path=require('path');const app=express();const PORT=process.env.PORT||10000;
+app.use(express.json({limit:'30kb'}));app.use(express.static(__dirname));
+let state={screen:'welcome',guest:'',room:'',plate:'',message:'We hope you have a wonderful stay.',updatedAt:new Date().toISOString()};
+app.get('/health',(req,res)=>res.json({ok:true,service:'Rohans Hotel Display Server'}));
+app.get('/admin',(req,res)=>res.sendFile(path.join(__dirname,'admin.html')));
+app.get('/api/state',(req,res)=>res.set('Cache-Control','no-store').json(state));
+app.post('/api/admin',(req,res)=>{const allowed=['screen','guest','room','plate','message'];for(const key of allowed){if(Object.prototype.hasOwnProperty.call(req.body,key)){if(key==='screen'&&!['welcome','registration','enjoy'].includes(req.body[key]))return res.status(400).json({error:'Invalid screen'});state[key]=String(req.body[key]).slice(0,key==='message'?500:100)}}state.updatedAt=new Date().toISOString();res.json({ok:true,state})});
+app.post('/api/book',(req,res)=>{const guest=String(req.body.guest||'').trim().slice(0,80);const plate=String(req.body.plate||'').trim().toUpperCase().slice(0,12);if(!guest||!plate)return res.status(400).json({error:'Enter guest name and car registration.'});state.guest=guest;state.plate=plate;state.screen='registration';state.updatedAt=new Date().toISOString();res.json({ok:true,state})});
+app.get('*',(req,res)=>res.sendFile(path.join(__dirname,'index.html')));
+app.listen(PORT,'0.0.0.0',()=>console.log('Rohans Hotel server listening on '+PORT));
